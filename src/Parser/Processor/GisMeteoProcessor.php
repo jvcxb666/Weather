@@ -54,11 +54,11 @@ class GisMeteoProcessor extends AbstractProcessor
                 preg_match($regex,$line,$matches);
                 if(!empty($matches[1]) && count($this->result['temp']) < 8) $this->result['temp'][] = trim(strip_tags($matches[1]));
 
-            } else if ( str_contains($line,"speed-value") ) {
+            } else if ( str_contains($line,"speed-value") && !str_contains($line,"data-row")) {
 
                 $regex = "/speed-value value=\"(.*?)\"/";
                 preg_match($regex,$line,$matches);
-                if(!empty($matches[1])) $this->result['wind'][] = trim($matches[1]);
+                if(isset($matches[1])) $this->result['wind'][] = trim($matches[1]);
 
             }
             unset($matches);

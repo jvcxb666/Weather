@@ -49,7 +49,7 @@ class GidrometProcessor extends AbstractProcessor
                     $regex = "/<i>(.*?)<\/i>&deg;<\/span>/";
                     $matches = [];
                     preg_match($regex,$line,$matches);
-                    if(!empty($matches[1])) $this->result['temp'][] = $matches[1];
+                    if(!empty($matches[1])) $this->result['temp'][] = $this->formatTemp($matches[1]);
         
                 } else if ( (str_contains($line,'<div class="fc_small_gorizont_ww"><i>') &&  str_contains($line,'м/c')) || str_contains($line,'><i> слабый</i>') ) {
         
@@ -119,5 +119,14 @@ class GidrometProcessor extends AbstractProcessor
             ];
         }
         $this->result = $result;
+    }
+
+    private function formatTemp(string|null $temp): string|null
+    {
+        if(empty($temp) || !str_contains($temp,"..")) return $temp;
+
+        $array = explode("..",$temp);
+
+        return strval(floor(($array[0]+$array[1])/2));
     }
 }

@@ -46,7 +46,7 @@ class WorldWeaterProcessor extends AbstractProcessor
                 $regex = "/<span>(.*?)<\/span>/";
                 $matches = [];
                 preg_match($regex,$line,$matches);
-                if(!empty($matches[1])) $this->result['temp'][] = substr(trim($matches[1]),0,-2);
+                if(!empty($matches[1])) $this->result['temp'][] = str_replace("+","",substr(trim($matches[1]),0,-2));
     
             } else if ( str_contains($line,"class='weather-wind'") ) {
     

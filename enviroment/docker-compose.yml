@@ -1,0 +1,47 @@
+version: "3.7"
+
+services:
+    weather:
+      container_name: weatherapache
+      image: php:8.1-apache
+      volumes:
+        - ./WeaterService:/var/www/html
+        - ./apache/core.conf:/etc/apache2/apache2.conf
+        - ./apache/default.conf:/etc/apache2/sites-available/000-default.conf
+      ports:
+        - 8080:80
+      build:
+        context: .
+        dockerfile: Dockerfile
+
+    weatherpg:
+      container_name: weatherpg
+      image: postgres:latest
+      volumes:
+        - ./WeaterService/postgres:/var/lib/postgresql/data
+      ports:
+        - "5433:5432"
+      environment:
+        POSTGRES_USER: root
+        POSTGRES_PASSWORD: pass
+
+    weatheredis:
+        image: redis:latest
+        container_name: weatheredis
+        restart: always
+        ports:
+          - "6379:6379"
+        volumes:
+          - /tmp/cache:/root/redis
+        environment:
+          - REDIS_PASSWORD=pass
+          - REDIS_PORT=6379
+          - REDIS_DATABASES=16
+    
+    adminer:
+      container_name: adminer
+      image: adminer:latest
+      restart: always
+      ports:
+        - 8093:8080
+      

@@ -7,7 +7,6 @@ use App\Parser\Factory\ParserFactory;
 use App\Utils\RedisAdapter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use PhpParser\Node\Stmt\Return_;
 
 class ForecastService
 {

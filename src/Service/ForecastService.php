@@ -91,7 +91,8 @@ class ForecastService
         foreach($data as $item) {
             $source = $item['source'];
             unset($item['source']);
-            $item['date'] = is_string($item['date']) ? $item['date'] : $item['date']->format("Y-m-d H:i:s");;
+            $item['date'] = is_string($item['date']) ? $item['date'] : $item['date']->format("Y-m-d H:i:s");
+            $item['weather'] = [$item['weather']];
 
             $result[$source][] = $item;
         }

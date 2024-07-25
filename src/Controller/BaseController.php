@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\ForecastService;
+use App\Utils\ResponseGenrator;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,9 +23,7 @@ class BaseController extends AbstractController
     #[Route('/', name: 'app_index')]
     public function index(): JsonResponse
     {
-        return $this->json([
-            "Weather data service"
-        ]);
+        return $this->json(ResponseGenrator::generate("Weather data service"));
     }
 
     #[Route("/forecast/now", name: "now", methods:"GET")]
@@ -33,11 +32,10 @@ class BaseController extends AbstractController
         try{
             $result = $this->service->getActualNow();
         } catch (Exception $e) {
-            dd($e->getMessage());
-            $result = "false";
+            $result = $e;
         }
 
-        return $this->json($result);
+        return $this->json(ResponseGenrator::generate($result));
     }
 
     #[Route("/forecast", name: "get", methods:"GET")]
@@ -47,11 +45,10 @@ class BaseController extends AbstractController
             $days = $request->get("days") ?? 7;
             $result = $this->service->getData($days);
         } catch (Exception $e) {
-            dd($e->getMessage());
-            $result = "false";
+            $result = $e;
         }
 
-        return $this->json($result);
+        return $this->json(ResponseGenrator::generate($result));
     }
 
     #[Route("/forecast", name: "update", methods:"PATCH")]
@@ -61,9 +58,9 @@ class BaseController extends AbstractController
             $this->service->updateData();
             $result = "true";
         } catch (Exception $e) {
-            $result = "false";
+            $result = $e;
         }
 
-        return $this->json($result);
+        return $this->json(ResponseGenrator::generate($result));
     }
 }

@@ -4,8 +4,10 @@ namespace App\Service;
 
 use App\Entity\Forecast;
 use App\Parser\Factory\ParserFactory;
+use App\Utils\RedisAdapter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpParser\Node\Stmt\Return_;
 
 class ForecastService
 {
@@ -18,11 +20,13 @@ class ForecastService
 
     private EntityManagerInterface $em;
     private ServiceEntityRepository $repo;
+    private RedisAdapter $cacher;
 
     public function __construct(EntityManagerInterface $entityManagerInterface)
     {
         $this->em = $entityManagerInterface;
         $this->repo = $this->em->getRepository(Forecast::class);
+        $this->cacher = new RedisAdapter();
     }
 
     public function getActualNow(): array
@@ -49,6 +53,11 @@ class ForecastService
     public function getData(int $days = 7): array
     {
         $days = $days < 7 ? $days : 7;
+
+        $rKey = "getWeather::{$days}";
+        $rValue = $this->cacher->get($rKey);
+        if(!empty($rValue)) return $rValue; 
+
         $data = $this->repo->findByDays($days);
         $result = [];
 
@@ -56,13 +65,15 @@ class ForecastService
         $result['average'] = $this->getAverage($data);
         unset($data);
 
+        $this->cacher->set($rKey,$result);
         return $result ?? [];
     }
 
     public function updateData(): void
     {
         $data = [];
-        
+
+        $this->cacher->deleteByParts(["getWeather::"]);
         foreach(self::WEATHER_SITES as $site) {
             $parser = ParserFactory::getParser($site);
             if($parser !== false) $data[$site] = $parser->getWeek();

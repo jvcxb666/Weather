@@ -11,7 +11,7 @@ class RedisAdapter
 
     public function __construct()
     {
-        $this->client = new Client("tcp://weatheredis:6379");
+        $this->client = new Client(ConfigProvider::getConfigVariable("redis_tcp"));
     }
 
     public function getClient(): Client

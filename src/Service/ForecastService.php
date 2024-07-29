@@ -4,19 +4,13 @@ namespace App\Service;
 
 use App\Entity\Forecast;
 use App\Parser\Factory\ParserFactory;
+use App\Utils\ConfigProvider;
 use App\Utils\RedisAdapter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ForecastService
 {
-
-    private const WEATHER_SITES = [
-        "WorldWeather",
-        "Gismeteo",
-        "Gidromet"
-    ];
-
     private EntityManagerInterface $em;
     private ServiceEntityRepository $repo;
     private RedisAdapter $cacher;
@@ -33,7 +27,7 @@ class ForecastService
         $result = [];
 
         $now = date("Y-m-d H:i:s");
-        foreach(self::WEATHER_SITES as $site) {
+        foreach(ConfigProvider::getConfigVariable("sites") as $site) {
             $parser = ParserFactory::getParser($site);
             if($parser !== false) {
                 $parsed = $parser->getNow();
@@ -73,7 +67,7 @@ class ForecastService
         $data = [];
 
         $this->cacher->deleteByParts(["getWeather::"]);
-        foreach(self::WEATHER_SITES as $site) {
+        foreach(ConfigProvider::getConfigVariable("sites") as $site) {
             $parser = ParserFactory::getParser($site);
             if($parser !== false) $data[$site] = $parser->getWeek();
         }

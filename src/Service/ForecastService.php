@@ -52,6 +52,10 @@ class ForecastService
         if(!empty($rValue)) return $rValue; 
 
         $data = $this->repo->findByDays($days);
+        if(empty($data)) {
+            $this->updateData();
+            $data = $this->repo->findByDays($days);
+        }
         $result = [];
 
         $result = $this->processData($data);

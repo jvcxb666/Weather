@@ -5,7 +5,7 @@ return [
     "redis_tcp" => "tcp://weatheredis:6379",
     "sites" => [
         "WorldWeather",
-        // "Gismeteo",
+        "Gismeteo",
         "Gidromet"
     ],
 
